@@ -1,0 +1,6 @@
+--skip-action-cable
+--skip-coffee
+--skip-system-test
+--skip-test
+--skip-turbolinks
+--skip-yarn
