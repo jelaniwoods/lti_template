@@ -1,70 +1,71 @@
 namespace :lti do
     desc "generate scaffolds for basic LTI app"
+    # Make all migrations
+    # Modify migration files to set default values
+    #   How to do that? Can I just look for files with names: that end in `_create_xxx.rb`?
+    #   Then in the file, gsub `column_name` with `column_name, default: true` for enabled in Credential
+    #   For Submission: :score, default: 0.0
+    #   For payload: `t.jsonb :payload, null: false, default: {}`
+    # Run migrations
+    #    "rails db:migrate"
+    # Modify model files with associations helpers, etc
+    # 
+    #   models/administrator.rb
+    #     has_many :credentials, dependent: :destroy
+    #   models/credential.rb
+    #     belongs_to :administrator
+    #     has_many :consumptions, dependent: :destroy
+    #     has_many :tool_consumers, through:   :consumptions, source:   :tool_consumer
+    #     has_many :launches, through:   :tool_consumers, source:   :launch
+    # 
+    #     has_secure_token :consumer_key
+    #     has_secure_token :consumer_secret
+    #   models/tool_consumer.rb
+    #     has_one :launch, dependent: :destroy
+    #     has_many :consumptions, dependent: :destroy
+    #     has_many :credentials, through: :consumptions, source: :credential
+    #   models/consumption.rb
+    #     belongs_to :credential
+    #     belongs_to :tool_consumer
+    #   models/launch.rb
+    #     belongs_to :context
+    #     belongs_to :resource
+    #     belongs_to :enrollment
+    #     belongs_to :tool_consumer
+    #     belongs_to :user
+    #     has_one :credential, through: :tool_consumer, source: :credentials
+    #   models/enrollment.rb
+    #     belongs_to :context
+    #     has_one :launch, dependent: :destroy
+    #     has_many :submissions, dependent: :destroy
+    #     belongs_to :user
+    #   models/resource.rb
+    #     belongs_to :context
+    #     has_one :launch, dependent: :destroy
+    #     has_many :submissions, dependent: :destroy
+    #   models/context.rb
+    #     has_many :launches, dependent: :destroy
+    #     has_many :enrollments, dependent: :destroy
+    #     has_many :resources, dependent: :destroy
+    #   models/submission.rb
+    #     belongs_to :resource
+    #     belongs_to :enrollment
+    #   models/user.rb
+    #     has_many :enrollments, dependent: :destroy
+    #     has_many :launches, dependent: :destroy
     task setup: :environment do
-      # Make all migrations
-      # Modify migration files to set default values
-      #   How to do that? Can I just look for files with names: that end in `_create_xxx.rb`?
-      #   Then in the file, gsub `column_name` with `column_name, default: true` for enabled in Credential
-      #   For Submission: :score, default: 0.0
-      #   For payload: `t.jsonb :payload, null: false, default: {}`
-      # Run migrations
-      #    "rails db:migrate"
-      # Modify model files with associations helpers, etc
-      # 
-      #   models/administrator.rb
-      #     has_many :credentials, dependent: :destroy
-      #   models/credential.rb
-      #     belongs_to :administrator
-      #     has_many :consumptions, dependent: :destroy
-      #     has_many :tool_consumers, through:   :consumptions, source:   :tool_consumer
-      #     has_many :launches, through:   :tool_consumers, source:   :launch
-      # 
-      #     has_secure_token :consumer_key
-      #     has_secure_token :consumer_secret
-      #   models/tool_consumer.rb
-      #     has_one :launch, dependent: :destroy
-      #     has_many :consumptions, dependent: :destroy
-      #     has_many :credentials, through: :consumptions, source: :credential
-      #   models/consumption.rb
-      #     belongs_to :credential
-      #     belongs_to :tool_consumer
-      #   models/launch.rb
-      #     belongs_to :context
-      #     belongs_to :resource
-      #     belongs_to :enrollment
-      #     belongs_to :tool_consumer
-      #     belongs_to :user
-      #     has_one :credential, through: :tool_consumer, source: :credentials
-      #   models/enrollment.rb
-      #     belongs_to :context
-      #     has_one :launch, dependent: :destroy
-      #     has_many :submissions, dependent: :destroy
-      #     has_many :messages, dependent: :destroy
-      #     belongs_to :user
-      #   models/resource.rb
-      #     belongs_to :context
-      #     has_one :launch, dependent: :destroy
-      #     has_many :messages, dependent: :destroy
-      #     has_many :submissions, dependent: :destroy
-      #   models/context.rb
-      #     has_many :launches, dependent: :destroy
-      #     has_many :enrollments, dependent: :destroy
-      #     has_many :resources, dependent: :destroy
-      #   models/submission.rb
-      #     belongs_to :resource
-      #     belongs_to :enrollment
-      #   models/user.rb
-      #     has_many :enrollments, dependent: :destroy
-      #     has_many :launches, dependent: :destroy
-      #     has_many :messages, through: :enrollments, source: :messages
-  
-  
       require "fileutils"
       include FileUtils
       def system!(*args)
         system(*args) || abort("\n== Command #{args} failed ==")
       end
       
+      def write_to_file(content, file)
+        IO.write(file, File.open(file) do |f|
+            f.read.gsub(/^.*/m, content)
+          end
+          )
+      end
       # Either make own generator that doesn't use `link_to_back_or_show` or add that to application_helper
   
       #  system! "rails generate draft:devise administrator"
@@ -122,11 +123,29 @@ namespace :lti do
             "belongs_to :user\n  " +
             "has_one :credential, through: :tool_consumer, source: :credentials\n" +        
           "end\n"
-          IO.write(file, File.open(file) do |f|
-            f.read.gsub(/^.*/m, content)
-          end
-          )
+          write_to_file(content, file)
   
+        when "administrator"
+        when "consumption"
+        when "tool_consumer"
+        when "credential"
+        when "enrollment"
+        when "resource"
+        when "context"
+
+        when "submission"
+            content = "class Submission < ApplicationRecord\n  " +
+              "belongs_to :resource\n  " +
+              "belongs_to :enrollment\n  " +
+              "end\n"
+            write_to_file(content, file)
+
+        when "user"
+          content = "class User < ApplicationRecord\n  " +
+            "has_many :enrollments, dependent: :destroy\n  " +
+            "has_many :launches, dependent: :destroy\n  " +
+            "end\n"
+          write_to_file(content, file)
         end
       end
   
