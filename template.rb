@@ -154,6 +154,7 @@ after_bundle do
   gsub_file "app/assets/javascripts/application.js", "//= require_tree .\n", ""
 
   # Better backtraces
+  file "bin/setup", render_file("setup")
 
   file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
 
