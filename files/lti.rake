@@ -66,17 +66,18 @@ namespace :lti do
                      end)
     end
     # Either make own generator that doesn't use `link_to_back_or_show` or add that to application_helper
+    # Currently, the template adds the helper to the project
 
-    #  system! "rails generate draft:devise administrator"
-    #  system! "rails generate draft:scaffold credential consumer_key:string consumer_secret:string administrator_id:integer enabled:boolean"
-    #  system! "rails generate draft:scaffold tool_consumer instance_guid:string instance_name:string instance_description:string instance_url:string instance_contact_email:string"
-    #  system! "rails generate draft:scaffold consumption tool_consumer_id:integer credential_id:integer"
-    #  system! "rails generate draft:scaffold launch context_id:integer tool_consumer_id:integer user_id:integer enrollment_id:integer resource_id:integer payload:jsonb"
-    #  system! "rails generate draft:scaffold enrollment context_id:integer user_id:integer roles:string"
-    #  system! "rails generate draft:scaffold resource id_from_tc:string context_id:integer title:string"
-    #  system! "rails generate draft:resource context title:string id_from_tc:string"
-    #  system! "rails generate draft:scaffold submission enrollment_id:integer resource_id:integer score:float"
-    #  system! "rails generate draft:scaffold user first_name:string last_name:string preferred_name:string id_from_tc:string"
+     system! "rails generate draft:devise administrator"
+     system! "rails generate draft:scaffold credential consumer_key:string consumer_secret:string administrator_id:integer enabled:boolean"
+     system! "rails generate draft:scaffold tool_consumer instance_guid:string instance_name:string instance_description:string instance_url:string instance_contact_email:string"
+     system! "rails generate draft:scaffold consumption tool_consumer_id:integer credential_id:integer"
+     system! "rails generate draft:scaffold launch context_id:integer tool_consumer_id:integer user_id:integer enrollment_id:integer resource_id:integer payload:jsonb"
+     system! "rails generate draft:scaffold enrollment context_id:integer user_id:integer roles:string"
+     system! "rails generate draft:scaffold resource id_from_tc:string context_id:integer title:string"
+     system! "rails generate draft:resource context title:string id_from_tc:string"
+     system! "rails generate draft:scaffold submission enrollment_id:integer resource_id:integer score:float"
+     system! "rails generate draft:scaffold user first_name:string last_name:string preferred_name:string id_from_tc:string"
 
     migration_files = Dir["db/migrate/*"].select { |x| x =~ /_create_[\w*]*.rb/ }
 
@@ -200,7 +201,7 @@ namespace :lti do
       end
 
       # migrate?
-      
+
     end
 
 
