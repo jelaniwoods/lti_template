@@ -170,7 +170,9 @@ after_bundle do
   end
 
   # unless skip_active_admin
-
+  remove_file "app/helpers/application_helper.rb"
+  file "app/helpers/application_helper.rb", render_file("application_helper.rb")
+  
   remove_file "config/database.yml"
   file "config/database.yml", render_file("database.yml")
 
