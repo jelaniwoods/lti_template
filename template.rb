@@ -6,19 +6,25 @@ ENV = :prod
 
 def path_to_file(filename)
   if ENV == :prod
-    p 'ENV not prod'
+    "https://raw.githubusercontent.com/jelaniwoods/good_template/master/files/#{filename}"
   else
-    File.join(__dir__, 'files', filename)
+    File.join(File.expand_path(File.dirname(__FILE__)), "files", filename)
   end
 end
 
 def path_to_blob(filename)
-  "https://raw.githubusercontent.com/firstdraft/appdev_template/master/files/#{filename}"
+  "https://raw.githubusercontent.com/jelaniwoods/good_template/master/files/#{filename}"
 end
 
 def render_file(filename)
   if ENV == :prod
-    p 'ENV not prod'
+    require "open-uri"
+
+    begin
+      open(path_to_file(filename)).read
+    rescue
+      open(path_to_blob(filename)).read
+    end
   else
     IO.read(path_to_file(filename))
   end
@@ -31,41 +37,41 @@ skip_devise = false
 
 # Remove default sqlite3 version
 # =================
-gsub_file 'Gemfile', /^gem\s+["']sqlite3["'].*$/, 'gem "pg"'
+gsub_file "Gemfile", /^gem\s+["']sqlite3["'].*$/,'gem "pg"'
 
 # Add standard gems
 # =================
 
-gem 'pg'
+gem "pg"
 
 gem_group :development, :test do
-  gem 'awesome_print'
-  gem 'dotenv-rails'
-  gem 'pry-rails'
+  gem "awesome_print"
+  gem "dotenv-rails"
+  gem "pry-rails"
 end
 
 gem_group :development do
-  gem 'annotate'
-  gem 'better_errors'
-  gem 'binding_of_caller'
-  gem 'draft_generators'
-  gem 'letter_opener'
-  gem 'meta_request'
+  gem "annotate"
+  gem "better_errors"
+  gem "binding_of_caller"
+  gem "draft_generators"
+  gem "letter_opener"
+  gem "meta_request"
 end
 
 gem_group :test do
-  gem 'capybara'
-  gem 'factory_bot_rails'
-  gem 'rspec-rails'
-  gem 'webmock'
+  gem "capybara"
+  gem "factory_bot_rails"
+  gem "rspec-rails"
+  gem "webmock"
   gem 'rspec-html-matchers'
 end
 
 gem_group :production do
-  gem 'rails_12factor'
+  gem "rails_12factor"
 end
 
-gem 'devise' unless skip_devise
+gem "devise" unless skip_devise
 # gem "activeadmin" unless skip_active_admin
 # gem "bootstrap-sass"
 # gem "jquery-rails"
@@ -78,14 +84,16 @@ gem 'devise' unless skip_devise
 #   "# gem 'puma'"
 
 after_bundle do
+
   # Add dev:prime task
 
-  file 'lib/tasks/dev.rake', render_file('dev.rake')
+  file "lib/tasks/dev.rake", render_file("dev.rake")
+
 
   # Prevent test noise in generators
 
   application \
-    <<-RB.gsub(/^      /, '')
+    <<-RB.gsub(/^      /, "")
       config.generators do |g|
             g.test_framework nil
             g.factory_bot false
@@ -96,16 +104,17 @@ after_bundle do
   # Configure mailer in development
 
   environment \
-    'config.action_mailer.default_url_options = { host: "localhost", port: 3000 }',
-    env: 'development'
+    "config.action_mailer.default_url_options = { host: \"localhost\", port: 3000 }",
+    env: "development"
+
 
   # Add dev toolbar to application layout
 
-  inside 'app' do
-    inside 'views' do
-      inside 'layouts' do
-        insert_into_file 'application.html.erb', before: '  </body>' do
-          <<-RB.gsub(/^        /, '')
+  inside "app" do
+    inside "views" do
+      inside "layouts" do
+        insert_into_file "application.html.erb", before: "  </body>" do
+          <<-RB.gsub(/^        /, "")
 
             <%= dev_tools if Rails.env.development? %>
           RB
@@ -114,12 +123,12 @@ after_bundle do
     end
   end
 
-  inside 'app' do
-    inside 'views' do
-      inside 'layouts' do
-        insert_into_file 'application.html.erb',
-                         after: "    <%= csrf_meta_tags %>\n" do
-          <<-HTML.gsub(/^        /, '')
+  inside "app" do
+    inside "views" do
+      inside "layouts" do
+        insert_into_file "application.html.erb",
+          after: "    <%= csrf_meta_tags %>\n" do
+            <<-HTML.gsub(/^        /, "")
 
             <!-- Expand the number of characters we can use in the document beyond basic ASCII 🎉 -->
             <meta charset="utf-8">
@@ -144,17 +153,17 @@ after_bundle do
 
   # Remove require_tree .
 
-  gsub_file 'app/assets/stylesheets/application.css', " *= require_tree .\n", ''
-  gsub_file 'app/assets/javascripts/application.js', "//= require_tree .\n", ''
+  gsub_file "app/assets/stylesheets/application.css", " *= require_tree .\n", ""
+  gsub_file "app/assets/javascripts/application.js", "//= require_tree .\n", ""
 
   # Better backtraces
 
-  file 'config/initializers/nicer_errors.rb', render_file('nicer_errors.rb')
+  file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
 
-  inside 'config' do
-    inside 'initializers' do
-      append_file 'backtrace_silencers.rb' do
-        <<-RUBY.gsub(/^          /, '')
+  inside "config" do
+    inside "initializers" do
+      append_file "backtrace_silencers.rb" do
+        <<-RUBY.gsub(/^          /, "")
 
           Rails.backtrace_cleaner.add_silencer { |line| line =~ /lib|gems/ }
 
@@ -165,26 +174,27 @@ after_bundle do
 
   # unless skip_active_admin
 
-  remove_file 'config/database.yml'
-  file 'config/database.yml', render_file('database.yml')
+  remove_file "config/database.yml"
+  file "config/database.yml", render_file("database.yml")
 
-  gsub_file 'config/database.yml', 'APP_NAME', @app_name.downcase
+  gsub_file "config/database.yml", "APP_NAME", @app_name.downcase
+
 
   # Install annotate
 
-  generate 'annotate:install'
+  generate "annotate:install"
 
   # Set up rspec and capybara
 
-  generate 'rspec:install'
+  generate "rspec:install"
 
-  remove_file '.rspec'
-  file '.rspec', render_file('.rspec')
+  remove_file ".rspec"
+  file ".rspec", render_file(".rspec")
 
-  inside 'spec' do
-    insert_into_file 'rails_helper.rb',
-                     after: "require 'rspec/rails'\n" do
-      <<-RUBY.gsub(/^        /, '')
+  inside "spec" do
+    insert_into_file "rails_helper.rb",
+      after: "require 'rspec/rails'\n" do
+      <<-RUBY.gsub(/^        /, "")
         require "capybara/rails"
         require "capybara/rspec"
       RUBY
@@ -193,15 +203,16 @@ after_bundle do
 
   # Turn off CSRF protection
 
-  gsub_file 'app/controllers/application_controller.rb',
-            /class ApplicationController < ActionController::Base/,
-            "class ApplicationController < ActionController::Base\n" \
-            "\t# protect_from_forgery with: :exception\n" \
-            "\tskip_before_action :verify_authenticity_token, raise: false"
+  gsub_file "app/controllers/application_controller.rb",
+    /class ApplicationController < ActionController::Base/,
+    "class ApplicationController < ActionController::Base\n" +
+    "\t# protect_from_forgery with: :exception\n" +
+    "\tskip_before_action :verify_authenticity_token, raise: false"
 
-  rails_command 'db:migrate'
+  rails_command "db:migrate"
 
   git :init
-  git add: '-A'
-  git commit: '-m "Init"'
+  git add: "-A"
+  git commit: "-m \"Init\""
+
 end
