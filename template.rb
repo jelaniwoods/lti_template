@@ -155,6 +155,8 @@ after_bundle do
 
   # Better backtraces
   file "bin/setup", render_file("setup")
+  file "libs/tasks/lti.rake", render_file("lti.rake")
+
 
   file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
 
