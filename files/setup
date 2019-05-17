@@ -21,8 +21,11 @@ chdir APP_ROOT do
   system! "rails db:drop"
   system! "rails db:create"
   system! "rails db:migrate"
+  puts "\n== Generating resources =="
   system! "rails lti:setup"
+  puts "\n== Seeding database =="
   system! "rails db:seed"
+  puts "\n== Rubocop =="
   system! "rubocop -a"
 
   # This script is a starting point to setup your application.
