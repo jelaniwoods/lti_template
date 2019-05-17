@@ -201,6 +201,8 @@ namespace :lti do
       end
 
       # migrate?
+      # Modify routes to have the config url
+      # modify some controller with the action to render the conig path
 
     end
 
