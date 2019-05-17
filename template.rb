@@ -209,6 +209,7 @@ after_bundle do
     "\t# protect_from_forgery with: :exception\n" +
     "\tskip_before_action :verify_authenticity_token, raise: false"
 
+  rails_command "db:create"
   rails_command "db:migrate"
 
   git :init

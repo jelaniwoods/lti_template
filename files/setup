@@ -17,14 +17,6 @@ chdir APP_ROOT do
   puts '== Installing dependencies =='
   system! 'bundle install'
 
-  # Install JavaScript dependencies if using Yarn
-  # system("bin/yarn")
-
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   cp "config/database.yml.sample", "config/database.yml"
-  # end
-
   puts "\n== Preparing database =="
   system! 'rails db:drop'
   system! 'rails db:create'
