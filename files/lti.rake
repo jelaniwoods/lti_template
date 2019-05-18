@@ -58,11 +58,10 @@ namespace :lti do
           f.read.gsub(/:payload/, ":payload, null: false, default: {}")
         end
         )
-        puts open(file).read
       end
     end
     model_files = model_names.map { |name| "app/models/" + name + ".rb" }
-    p model_files
+    # p model_files
 
     model_files.each_with_index do |file, i|
       p model_names[i]
@@ -82,11 +81,12 @@ namespace :lti do
       when "administrator"
         content = "class Administrator < ApplicationRecord\n  " +
           "# Include default devise modules. Others available are:\n  " + 
-          "# \t:confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  "
+          "# \t:confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  " +
           "devise :database_authenticatable, :registerable,\n\t\t" +
           ":recoverable, :rememberable, :validatable\n  " +
           "has_many :credentials, dependent: :destroy\n" +
           "end\n"
+
         write_to_file(content, file)
 
       when "consumption"
