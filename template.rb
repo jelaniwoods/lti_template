@@ -157,7 +157,7 @@ after_bundle do
   remove_file "bin/setup"
   file "bin/setup", render_file("setup")
 
-  remove_file "db/seteds.rb"
+  remove_file "db/seeds.rb"
   file "db/seeds.rb", render_file("seeds.rb")
 
   file "libs/tasks/lti.rake", render_file("lti.rake")
