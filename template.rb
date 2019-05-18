@@ -54,7 +54,7 @@ gem_group :development do
   gem "annotate"
   gem "better_errors"
   gem "binding_of_caller"
-  gem "draft_generators"
+  gem "draft_generators", github: "jelaniwoods/draft_generators"
   gem "letter_opener"
   gem "meta_request"
 end
@@ -157,10 +157,12 @@ after_bundle do
   remove_file "bin/setup"
   file "bin/setup", render_file("setup")
 
+  run "chmod 755 bin/setup"
+
   remove_file "db/seeds.rb"
   file "db/seeds.rb", render_file("seeds.rb")
 
-  file "libs/tasks/lti.rake", render_file("lti.rake")
+  file "lib/tasks/lti.rake", render_file("lti.rake")
 
 
   file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
