@@ -129,7 +129,7 @@ namespace :lti do
           "# Include default devise modules. Others available are:\n  " + 
           "# \t:confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  "
           "devise :database_authenticatable, :registerable,\n\t\t" +
-          ":recoverable, :rememberable, :validatable\n  "
+          ":recoverable, :rememberable, :validatable\n  " +
           "has_many :credentials, dependent: :destroy\n" +
           "end\n"
         write_to_file(content, file)
@@ -203,6 +203,8 @@ namespace :lti do
       # migrate?
       # Modify routes to have the config url
       # modify some controller with the action to render the conig path
+      # Make a generator for this
+      system! "rails db:migrate"
 
     end
 
