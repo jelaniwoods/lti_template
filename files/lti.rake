@@ -9,50 +9,7 @@ namespace :lti do
   # Run migrations
   #    "rails db:migrate"
   # Modify model files with associations helpers, etc
-  #
-  #   models/administrator.rb
-  #     has_many :credentials, dependent: :destroy
-  #   models/credential.rb
-  #     belongs_to :administrator
-  #     has_many :consumptions, dependent: :destroy
-  #     has_many :tool_consumers, through:   :consumptions, source:   :tool_consumer
-  #     has_many :launches, through:   :tool_consumers, source:   :launch
-  #
-  #     has_secure_token :consumer_key
-  #     has_secure_token :consumer_secret
-  #   models/tool_consumer.rb
-  #     has_one :launch, dependent: :destroy
-  #     has_many :consumptions, dependent: :destroy
-  #     has_many :credentials, through: :consumptions, source: :credential
-  #   models/consumption.rb
-  #     belongs_to :credential
-  #     belongs_to :tool_consumer
-  #   models/launch.rb
-  #     belongs_to :context
-  #     belongs_to :resource
-  #     belongs_to :enrollment
-  #     belongs_to :tool_consumer
-  #     belongs_to :user
-  #     has_one :credential, through: :tool_consumer, source: :credentials
-  #   models/enrollment.rb
-  #     belongs_to :context
-  #     has_one :launch, dependent: :destroy
-  #     has_many :submissions, dependent: :destroy
-  #     belongs_to :user
-  #   models/resource.rb
-  #     belongs_to :context
-  #     has_one :launch, dependent: :destroy
-  #     has_many :submissions, dependent: :destroy
-  #   models/context.rb
-  #     has_many :launches, dependent: :destroy
-  #     has_many :enrollments, dependent: :destroy
-  #     has_many :resources, dependent: :destroy
-  #   models/submission.rb
-  #     belongs_to :resource
-  #     belongs_to :enrollment
-  #   models/user.rb
-  #     has_many :enrollments, dependent: :destroy
-  #     has_many :launches, dependent: :destroy
+ 
   task setup: :environment do
     require "fileutils"
     include FileUtils
@@ -65,8 +22,8 @@ namespace :lti do
                        f.read.gsub(/^.*/m, content)
                      end)
     end
-    # Either make own generator that doesn't use `link_to_back_or_show` or add that to application_helper
-    # Currently, the template adds the helper to the project
+    
+    # Currently, the template adds the link_back_or_show helper to the project
 
      system! "rails generate draft:devise administrator"
      system! "rails generate draft:scaffold credential consumer_key:string consumer_secret:string administrator_id:integer enabled:boolean"
@@ -85,26 +42,24 @@ namespace :lti do
     migration_files.each do |file|
       name = file.split("_").last.split(".").first.singularize
       model_names << name
-      # p name
-
-      # case name
-      # when "credential"
-      #   IO.write(file, File.open(file) do |f|
-      #     f.read.gsub(/:enabled/, ":enabled, default: true")
-      #   end
-      #   )
-      # when "submission"
-      #   IO.write(file, File.open(file) do |f|
-      #     f.read.gsub(/:score/, ":score, default: 0.0")
-      #   end
-      #   )
-      # when "launch"
-      #   IO.write(file, File.open(file) do |f|
-      #     f.read.gsub(/:payload/, ":payload, null: false, default: {}")
-      #   end
-      #   )
-      #   puts open(file).read
-      # end
+      case name
+      when "credential"
+        IO.write(file, File.open(file) do |f|
+          f.read.gsub(/:enabled/, ":enabled, default: true")
+        end
+        )
+      when "submission"
+        IO.write(file, File.open(file) do |f|
+          f.read.gsub(/:score/, ":score, default: 0.0")
+        end
+        )
+      when "launch"
+        IO.write(file, File.open(file) do |f|
+          f.read.gsub(/:payload/, ":payload, null: false, default: {}")
+        end
+        )
+        puts open(file).read
+      end
     end
     model_files = model_names.map { |name| "app/models/" + name + ".rb" }
     p model_files
