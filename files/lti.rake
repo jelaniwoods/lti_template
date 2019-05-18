@@ -157,10 +157,10 @@ namespace :lti do
 
       # migrate?
       # Make a generator for this
-      system! "rails db:migrate"
-
+      
     end
-
+    
+    system! "rails db:migrate"
 
   end
 
