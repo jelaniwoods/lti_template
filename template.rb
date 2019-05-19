@@ -42,7 +42,7 @@ gsub_file "Gemfile", /^gem\s+["']sqlite3["'].*$/, 'gem "pg"'
 # Add standard gems
 # =================
 
-gem "pg"
+gem "ims-lti"
 
 gem_group :development, :test do
   gem "awesome_print"
