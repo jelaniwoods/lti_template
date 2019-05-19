@@ -29,12 +29,12 @@ namespace :lti do
      system! "rails generate draft:lti credential consumer_key:string consumer_secret:string administrator_id:integer enabled:boolean"
      system! "rails generate draft:lti tool_consumer instance_guid:string instance_name:string instance_description:string instance_url:string instance_contact_email:string"
      system! "rails generate draft:lti consumption tool_consumer_id:integer credential_id:integer"
-     system! "rails generate draft:launch"
      system! "rails generate draft:lti enrollment context_id:integer user_id:integer roles:string"
      system! "rails generate draft:lti resource id_from_tc:string context_id:integer title:string"
      system! "rails generate draft:lti context title:string id_from_tc:string"
      system! "rails generate draft:lti submission enrollment_id:integer resource_id:integer score:float"
      system! "rails generate draft:lti user first_name:string last_name:string preferred_name:string id_from_tc:string"
+     system! "rails generate draft:launch"
 
     migration_files = Dir["db/migrate/*"].select { |x| x =~ /_create_[\w*]*.rb/ }
 
