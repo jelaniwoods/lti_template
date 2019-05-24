@@ -30,10 +30,9 @@ def render_file(filename)
   end
 end
 
-# skip_active_admin = false
 skip_devise = false
-# skip_active_admin = yes?("Skip ActiveAdmin?")
-# skip_devise = yes?("Skip Devise?")
+
+skip_devise = yes?("Skip Devise?")
 
 # Remove default sqlite3 version
 # =================
@@ -72,10 +71,7 @@ gem_group :production do
 end
 
 gem "devise" unless skip_devise
-# gem "activeadmin" unless skip_active_admin
-# gem "bootstrap-sass"
-# gem "jquery-rails"
-# gem "font-awesome-sass", "~> 4.7.0"
+
 
 # Use WEBrick
 
@@ -105,20 +101,6 @@ after_bundle do
     'config.action_mailer.default_url_options = { host: "localhost", port: 3000 }',
     env: "development"
 
-  # Add dev toolbar to application layout
-
-  inside "app" do
-    inside "views" do
-      inside "layouts" do
-        insert_into_file "application.html.erb", before: "  </body>" do
-          <<-RB.gsub(/^        /, "")
-
-            <%= dev_tools if Rails.env.development? %>
-          RB
-        end
-      end
-    end
-  end
 
   inside "app" do
     inside "views" do
@@ -162,7 +144,7 @@ after_bundle do
   remove_file "db/seeds.rb"
   file "db/seeds.rb", render_file("seeds.rb")
 
-  file "lib/tasks/lti.rake", render_file("lti.rake")
+  # file "lib/tasks/lti.rake", render_file("lti.rake")
 
 
   file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
