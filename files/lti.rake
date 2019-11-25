@@ -1,14 +1,14 @@
 namespace :lti do
-  desc "generate scaffolds for basic LTI app"
+  desc "Generates neccessary resources for basic LTI app, modifies migration files with default values, adds association helper methods"
   # Make all migrations
   # Modify migration files to set default values
   #   How to do that? Can I just look for files with names: that end in `_create_xxx.rb`?
   #   Then in the file, gsub `column_name` with `column_name, default: true` for enabled in Credential
   #   For Submission: :score, default: 0.0
   #   For payload: `t.jsonb :payload, null: false, default: {}`
-  # Run migrations
-  #    "rails db:migrate"
   # Modify model files with associations helpers, etc
+  # Adds Launch service
+  # Add seed data
  
   task setup: :environment do
     require "fileutils"
@@ -81,8 +81,8 @@ namespace :lti do
       when "administrator"
         content = "class Administrator < ApplicationRecord\n  " +
           "# Include default devise modules. Others available are:\n  " + 
-          "# \t:confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  " +
-          "devise :database_authenticatable, :registerable,\n\t\t" +
+          "#   :confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  " +
+          "devise :database_authenticatable, :registerable,\n    " +
           ":recoverable, :rememberable, :validatable\n  " +
           "has_many :credentials, dependent: :destroy\n" +
           "end\n"
@@ -113,13 +113,16 @@ namespace :lti do
           "has_many :launches, through:   :tool_consumers, source:   :launch\n\n  " +
       
           "has_secure_token :consumer_key\n  " +
-          "has_secure_token :consumer_secret\n" +
+          "has_secure_token :consumer_secret\n\n  " +
+          "def create_tool_provider(params = {})\n  " +
+          "  IMS::LTI::ToolProvider.new(consumer_key, consumer_secret, params)\n  " +
+          "end\n" +
           "end\n"
         write_to_file(content, file)
 
       when "enrollment"
         content = "class Enrollment < ApplicationRecord\n  " +
-          "has_one :launch, dependent: :destroy\n  " +
+          "has_many :launches, dependent: :destroy\n  " +
           "has_many :submissions, dependent: :destroy\n  " +
           "belongs_to :context\n  " +
           "belongs_to :user\n" +
@@ -160,8 +163,6 @@ namespace :lti do
       
     end
     
-    system! "rails db:migrate"
-
   end
 
 end

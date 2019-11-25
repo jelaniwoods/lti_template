@@ -1,8 +1,8 @@
 # Helper methods to copy in files
 # ===============================
 
-ENV = :prod
-# ENV = :dev
+# ENV = :prod
+ENV = :dev
 
 def path_to_file(filename)
   if ENV == :prod
@@ -30,31 +30,26 @@ def render_file(filename)
   end
 end
 
-skip_devise = false
-
-skip_devise = yes?("Skip Devise?")
-
-# Remove default sqlite3 version
-# =================
-gsub_file "Gemfile", /^gem\s+["']sqlite3["'].*$/, 'gem "pg"'
-
 # Add standard gems
 # =================
 
-gem "ims-lti"
+gem "ims-lti", "~> 1.2", ">= 1.2.2"
 
 gem_group :development, :test do
   gem "awesome_print"
   gem "dotenv-rails"
   gem "pry-rails"
+  gem "rubocop"
+  gem "rubocop-performance"
 end
 
 gem_group :development do
   gem "annotate"
-  gem "better_errors"
+  gem "better_errors", github: "charliesome/better_errors"
   gem "binding_of_caller"
   gem "draft_generators", github: "jelaniwoods/draft_generators"
   gem "letter_opener"
+  gem "rails-erd"
   gem "meta_request"
 end
 
@@ -70,14 +65,8 @@ gem_group :production do
   gem "rails_12factor"
 end
 
-gem "devise" unless skip_devise
+gem "devise"
 
-
-# Use WEBrick
-
-# gsub_file "Gemfile",
-#   /gem 'puma'/,
-#   "# gem 'puma'"
 
 after_bundle do
   # Add dev:prime task
@@ -132,8 +121,8 @@ after_bundle do
 
   # Remove require_tree .
 
-  gsub_file "app/assets/stylesheets/application.css", " *= require_tree .\n", ""
-  gsub_file "app/assets/javascripts/application.js", "//= require_tree .\n", ""
+  # gsub_file "app/assets/stylesheets/application.css", " *= require_tree .\n", ""
+  # gsub_file "app/assets/javascripts/application.js", "//= require_tree .\n", ""
 
   # Better backtraces
   remove_file "bin/setup"
@@ -144,31 +133,16 @@ after_bundle do
   remove_file "db/seeds.rb"
   file "db/seeds.rb", render_file("seeds.rb")
 
-  # file "lib/tasks/lti.rake", render_file("lti.rake")
-
 
   file "config/initializers/nicer_errors.rb", render_file("nicer_errors.rb")
 
-  inside "config" do
-    inside "initializers" do
-      append_file "backtrace_silencers.rb" do
-        <<-RUBY.gsub(/^          /, "")
-
-          Rails.backtrace_cleaner.add_silencer { |line| line =~ /lib|gems/ }
-
-        RUBY
-      end
-    end
-  end
-
-  # unless skip_active_admin
   remove_file "app/helpers/application_helper.rb"
   file "app/helpers/application_helper.rb", render_file("application_helper.rb")
   
-  remove_file "config/database.yml"
-  file "config/database.yml", render_file("database.yml")
+  # remove_file "config/database.yml"
+  # file "config/database.yml", render_file("database.yml")
 
-  gsub_file "config/database.yml", "APP_NAME", @app_name.downcase
+  # gsub_file "config/database.yml", "APP_NAME", @app_name.downcase
 
   # Install annotate
 
@@ -178,8 +152,8 @@ after_bundle do
 
   generate "rspec:install"
 
-  remove_file ".rspec"
-  file ".rspec", render_file(".rspec")
+  # remove_file ".rspec"
+  # file ".rspec", render_file(".rspec")
 
   inside "spec" do
     insert_into_file "rails_helper.rb",
@@ -191,15 +165,12 @@ after_bundle do
     end
   end
 
-  # Turn off CSRF protection
-
-  gsub_file "app/controllers/application_controller.rb",
-            /class ApplicationController < ActionController::Base/,
-            "class ApplicationController < ActionController::Base\n" \
-            "\t# protect_from_forgery with: :exception\n" \
-            "\tskip_before_action :verify_authenticity_token, raise: false"
-
   rails_command "db:create"
+
+  file "lib/tasks/lti.rake", render_file("lti.rake")
+  puts "\n== Generating resources =="
+  rails_command "lti:setup"
+
   rails_command "db:migrate"
 
   git :init

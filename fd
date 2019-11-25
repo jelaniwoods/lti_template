@@ -1,6 +1,4 @@
---skip-action-cable
+--database=postgresql
 --skip-coffee
 --skip-system-test
 --skip-test
---skip-turbolinks
---skip-yarn
