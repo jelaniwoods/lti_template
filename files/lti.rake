@@ -73,9 +73,18 @@ namespace :lti do
           "belongs_to :resource\n  " +
           "belongs_to :enrollment\n  " +
           "belongs_to :tool_consumer\n  " +
-          "belongs_to :user\n  " +
+          "belongs_to :user\n\n  " +
           "has_one :credential, through: :tool_consumer, source: :credentials\n" +
           "end\n"
+        write_to_file(content, file)
+
+      when "tool_consumer"
+        content = "class ToolConsumer < ApplicationRecord\n  " +
+        "has_one :launch, dependent: :destroy\n  " +
+        "has_many :consumptions, dependent: :destroy\n  " +
+        "has_many :credentials, through: :consumptions\n\n  " +
+        "validates :instance_guid, presence: true, uniqueness: true" +
+        "end\n"
         write_to_file(content, file)
 
       when "administrator"
