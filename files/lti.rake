@@ -41,6 +41,9 @@ namespace :lti do
     model_names = []
     migration_files.each do |file|
       name = file.split("_").last.split(".").first.singularize
+      if name == "consumer"
+        name = "tool_consumer"
+      end
       model_names << name
       case name
       when "credential"
@@ -61,7 +64,6 @@ namespace :lti do
       end
     end
     model_files = model_names.map { |name| "app/models/" + name + ".rb" }
-    # p model_files
 
     model_files.each_with_index do |file, i|
       p model_names[i]
