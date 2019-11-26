@@ -76,7 +76,7 @@ namespace :lti do
           "belongs_to :enrollment\n  " +
           "belongs_to :tool_consumer\n  " +
           "belongs_to :user\n\n  " +
-          "has_one :credential, through: :tool_consumer, source: :credentials\n" +
+          "has_one :credential, through: :tool_consumer, source: :credentials\n\n" +
           "end\n"
         write_to_file(content, file)
 
@@ -85,7 +85,7 @@ namespace :lti do
         "has_one :launch, dependent: :destroy\n  " +
         "has_many :consumptions, dependent: :destroy\n  " +
         "has_many :credentials, through: :consumptions\n\n  " +
-        "validates :instance_guid, presence: true, uniqueness: true" +
+        "validates :instance_guid, presence: true, uniqueness: true\n\n" +
         "end\n"
         write_to_file(content, file)
 
@@ -95,7 +95,7 @@ namespace :lti do
           "#   :confirmable, :lockable, :timeoutable, :trackable and :omniauthable\n  " +
           "devise :database_authenticatable, :registerable,\n    " +
           ":recoverable, :rememberable, :validatable\n  " +
-          "has_many :credentials, dependent: :destroy\n" +
+          "has_many :credentials, dependent: :destroy\n\n" +
           "end\n"
 
         write_to_file(content, file)
@@ -103,7 +103,7 @@ namespace :lti do
       when "consumption"
         content = "class Consumption < ApplicationRecord\n  " +
           "belongs_to :credential\n  " +
-          "belongs_to :tool_consumer\n" +
+          "belongs_to :tool_consumer\n\n" +
           "end\n"
         write_to_file(content, file)
 
@@ -111,7 +111,7 @@ namespace :lti do
         content = "class Consumption < ApplicationRecord\n  " +
           "has_one :launch, dependent: :destroy\n  " +
           "has_many :consumptions, dependent: :destroy\n  " +
-          "has_many :credentials, through: :consumptions, source: :credential\n" +
+          "has_many :credentials, through: :consumptions, source: :credential\n\n" +
           "end\n"
         write_to_file(content, file)
 
@@ -120,14 +120,14 @@ namespace :lti do
 
           "belongs_to :administrator\n  " +
           "has_many :consumptions, dependent: :destroy\n  " +
-          "has_many :tool_consumers, through:   :consumptions, source:   :tool_consumer\n  " +
-          "has_many :launches, through:   :tool_consumers, source:   :launch\n\n  " +
+          "has_many :tool_consumers, through: :consumptions, source: :tool_consumer\n  " +
+          "has_many :launches, through: :tool_consumers, source: :launch\n\n  " +
       
           "has_secure_token :consumer_key\n  " +
           "has_secure_token :consumer_secret\n\n  " +
           "def create_tool_provider(params = {})\n  " +
           "  IMS::LTI::ToolProvider.new(consumer_key, consumer_secret, params)\n  " +
-          "end\n" +
+          "end\n\n" +
           "end\n"
         write_to_file(content, file)
 
@@ -136,14 +136,14 @@ namespace :lti do
           "has_many :launches, dependent: :destroy\n  " +
           "has_many :submissions, dependent: :destroy\n  " +
           "belongs_to :context\n  " +
-          "belongs_to :user\n" +
+          "belongs_to :user\n\n" +
           "end\n"
         write_to_file(content, file)
       when "resource"
         content = "class Resource < ApplicationRecord\n  " +
           "has_one :launch, dependent: :destroy\n  " +
           "has_many :submissions, dependent: :destroy\n  " +
-          "belongs_to :context\n" + 
+          "belongs_to :context\n\n" + 
           "end\n"
         write_to_file(content, file)
       when "context"
@@ -151,20 +151,20 @@ namespace :lti do
           "has_one :launch, dependent: :destroy\n  " +
           "has_many :launches, dependent: :destroy\n  " +
           "has_many :enrollments, dependent: :destroy\n  " +
-          "has_many :resources, dependent: :destroy\n" +
+          "has_many :resources, dependent: :destroy\n\n" +
           "end\n"
         write_to_file(content, file)
       when "submission"
         content = "class Submission < ApplicationRecord\n  " +
           "belongs_to :resource\n  " +
-          "belongs_to :enrollment\n  " +
+          "belongs_to :enrollment\n\n" +
           "end\n"
         write_to_file(content, file)
 
       when "user"
         content = "class User < ApplicationRecord\n  " +
           "has_many :enrollments, dependent: :destroy\n  " +
-          "has_many :launches, dependent: :destroy\n  " +
+          "has_many :launches, dependent: :destroy\n\n" +
           "end\n"
         write_to_file(content, file)
       end
